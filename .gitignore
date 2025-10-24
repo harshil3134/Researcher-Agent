@@ -1,0 +1,70 @@
+# Environment files
+.env
+.env.*
+.envrc
+.venv/
+venv/
+ENV/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+.eggs/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage
+htmlcov/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+coverage.xml
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+logs/
+*.log
+
+# Key/Secrets
+*.pem
+*.key
+
+# Node
+node_modules/
+
+# Misc
+*.sqlite3
+
+# Local virtualenvs created by some tools
+.envs/
+
+# Other
+*.egg
+*.egg-info
+.eggs
+
+# Editor swap files
+*~
+*.swp
