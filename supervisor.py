@@ -9,12 +9,14 @@ from langchain_core.tools import tool, InjectedToolCallId
 from datetime import datetime
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.types import Command, RunnableConfig
+from langchain_groq import ChatGroq
 from researcher import graph as research_agent
 from copywriter import graph as copywriter_agent
 
+
 load_dotenv()
 
-supervisor_prompt=open("prompt/supervisor.md","r").read()
+supervisor_prompt=open("prompts/supervisor.md","r").read()
 
 class SupervisorState(BaseModel):
     """The state of the supervisor agent.

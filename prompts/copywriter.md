@@ -8,6 +8,8 @@ review_research_reports: Use this tool to review the research reports to inform 
 generate_linkedin_post: Use this tool to generate a LinkedIn post.
 generate_blog_post: Use this tool to generate a blog post.
 
+
+after running the copywriter agent to generate post call  generate_linkedin_post at last to save it to a file
 ## Examples
 
 ### Example Linkedin Post

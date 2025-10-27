@@ -8,8 +8,9 @@ from langgraph.prebuilt import InjectedState
 from datetime import datetime
 from langgraph.prebuilt import ToolNode
 from langchain_core.messages import SystemMessage
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
-load_dotenv()
+import os
 
 copywriter_prompt=open("prompts/copywriter.md","r").read()
 linkedin_example=open("example_content/linkedin.md","r").read()
@@ -33,10 +34,10 @@ async def review_research_reports(
 
 @tool
 async def generate_linkedin_post(
-    titile:str,
+    title:str,
     content:str,
 ):
-    """Use this tool to generate a LinkedIn post.
+    """Use this tool to generate a LinkedIn post and save it to a file.
     
     Args:
         title: The title of the post.
@@ -70,10 +71,11 @@ async def generate_blog_post(
 
     return f"The blog post has been generated and saved to {filename}"
 
-llm=ChatGroq(
+key = os.getenv("GOOGLE_API_KEY_2")
+llm=ChatGoogleGenerativeAI(
     name="CopyWriter",
-    model="openai/gpt-oss-120b",
-    reasoning_effort="low",
+    model="gemini-2.5-flash",
+    api_key=key
 )
 
 tools=[

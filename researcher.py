@@ -10,6 +10,7 @@ from langchain_core.tools import tool, InjectedToolCallId
 from langgraph.checkpoint.memory import MemorySaver
 from langchain_tavily import TavilySearch, TavilyExtract
 from datetime import datetime
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.types import Command
 
 load_dotenv()
@@ -114,10 +115,9 @@ tools = [
     generate_research_report,
     ]
 
-llm=ChatGroq(
+llm=ChatGoogleGenerativeAI(
     name="Researcher",
-    model="openai/gpt-oss-120b",
-    reasoning_effort="low",
+    model="gemini-2.0-flash-lite",
 )
 
 llm_with_tools = llm.bind_tools(tools)
@@ -157,8 +157,8 @@ graph = builder.compile()
 # graph = builder.compile(checkpointer=MemorySaver())
 
 # Visualize the graph
-from IPython.display import Image
-Image(graph.get_graph().draw_mermaid_png())
+# from IPython.display import Image
+# Image(graph.get_graph().draw_mermaid_png())
 
 # import asyncio
 # from langchain_core.messages import HumanMessage
