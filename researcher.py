@@ -12,6 +12,7 @@ from langchain_tavily import TavilySearch, TavilyExtract
 from datetime import datetime
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.types import Command
+import os
 
 load_dotenv()
 
@@ -100,6 +101,27 @@ async def generate_research_report(
             )],
         })
 
+@tool
+async def get_context(
+    filename:str
+    ):
+    """Call this tool to get context from a file for ongoing post research or updating the post. Use this when explicitly told by the user.
+
+    Args:
+        filename: The path to the file to read.
+    
+    Returns:
+        The text content of the file.
+    """
+    content=""
+    try:
+        content=open(filename,'r+').read()
+    except FileNotFoundError:
+        return f"Error: The file '{filename}' was not found."
+    except Exception as e:
+        return f"Error reading file : {e}"
+    return content
+
 
 class ResearcherState(BaseModel):
     """The state of the researcher agent. 
@@ -113,11 +135,13 @@ tools = [
     search_web, 
     extract_content_from_webpage,
     generate_research_report,
+    get_context
     ]
-
+key = os.getenv("GOOGLE_API_KEY_1")
 llm=ChatGoogleGenerativeAI(
     name="Researcher",
     model="gemini-2.0-flash-lite",
+    api_key=key
 )
 
 llm_with_tools = llm.bind_tools(tools)
