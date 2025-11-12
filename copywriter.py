@@ -11,6 +11,9 @@ from langchain_core.messages import SystemMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
 from dotenv import load_dotenv
+import os
+import tweepy
+import json
 import requests
 import json
 import os
@@ -127,7 +130,59 @@ tools=[
     generate_x_post,
     generate_blog_post,
     post_to_linkedin
+
+    ,
+    # publish_x_thread posts a list of strings as a thread to X (Twitter)
+    # use dry_run=True to preview payloads without sending
+    # requires X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, X_ACCESS_TOKEN_SECRET in env
+    
 ]
+
+
+@tool
+async def publish_x_thread(posts: list, dry_run: bool = True):
+    # Minimal, easy-to-read implementation.
+    consumer_key = os.getenv("X_API_KEY")
+    consumer_secret = os.getenv("X_API_SECRET")
+    access_token = os.getenv("X_ACCESS_TOKEN")
+    access_token_secret = os.getenv("X_ACCESS_TOKEN_SECRET")
+
+    if not posts or not isinstance(posts, list):
+        return {"ok": False, "error": "posts must be a non-empty list"}
+
+    # Dry-run simply echoes the posts back so callers can preview payloads.
+    if dry_run:
+        return {"ok": True, "dry_run": True, "posts": posts}
+
+    if not (consumer_key and consumer_secret and access_token and access_token_secret):
+        return {"ok": False, "error": "Missing X credentials in environment"}
+
+    client = tweepy.Client(
+        consumer_key=consumer_key,
+        consumer_secret=consumer_secret,
+        access_token=access_token,
+        access_token_secret=access_token_secret,
+    )
+
+    posted_ids = []
+    try:
+        # Post the first tweet
+        resp = client.create_tweet(text=posts[0])
+        data = getattr(resp, "data", {}) or {}
+        tweet_id = data.get("id") if isinstance(data, dict) else getattr(data, "id", None)
+        posted_ids.append(tweet_id)
+
+        # Post replies (if any)
+        for text in posts[1:]:
+            resp = client.create_tweet(text=text, reply={"in_reply_to_tweet_id": tweet_id})
+            data = getattr(resp, "data", {}) or {}
+            tweet_id = data.get("id") if isinstance(data, dict) else getattr(data, "id", None)
+            posted_ids.append(tweet_id)
+
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
+
+    return {"ok": True, "posted_ids": posted_ids}
 
 llm_with_tools=llm.bind_tools(tools)
 
